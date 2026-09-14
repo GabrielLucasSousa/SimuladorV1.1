@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Simulador de Revisões Flexcare</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    window.SUPABASE_URL = 'https://aogpozbwqijqpqdtrrst.supabase.co';
+    window.SUPABASE_ANON_KEY = 'sb_publishable_V6BJSWicVrNxknareckocQ_zF-HHdwc';
+
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef6ff',
+              100: '#d9ebff',
+              600: '#0052a3',
+              800: '#003366',
+              900: '#002244',
+            },
+            emerald: {
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body class="min-h-screen text-slate-800 antialiased flex flex-col justify-between pb-28">
+
+  <!-- Header Superior -->
+  <header class="bg-gradient-to-r from-brand-900 via-brand-800 to-slate-900 text-white shadow-lg sticky top-0 z-40">
+    <div class="max-w-md mx-auto px-4 py-3.5 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div
+          class="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 text-emerald-400 font-bold text-lg shadow-inner">
+          <i class="fa-solid fa-car-tunnel text-emerald-400"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span
+              class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Oficial</span>
+            <span class="text-xs text-slate-300 font-medium">Tabela 2026/27</span>
+          </div>
+          <h1 class="text-base font-bold tracking-tight text-white leading-tight">Flexcare Simulator</h1>
+        </div>
+      </div>
+      <button onclick="openInfoModal()"
+        class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 flex items-center justify-center transition"
+        title="Informações">
+        <i class="fa-solid fa-circle-info text-sm"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="max-w-md mx-auto w-full px-4 pt-4 space-y-4 flex-1">
+
+    <!-- Card de Introdução Rápida -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center gap-3.5">
+      <div
+        class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0 text-xl font-bold">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <div>
+        <h2 class="text-sm font-bold text-slate-800 leading-tight">Economia Garantida e Preço Fixo</h2>
+        <p class="text-xs text-slate-500 mt-0.5">Simule os pacotes de manutenção programada Fiat.</p>
+      </div>
+    </div>
+
+    <!-- Formulário de Seleção do Veículo -->
+    <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-2">
+          <span
+            class="w-6 h-6 rounded-full bg-brand-800 text-white text-xs flex items-center justify-center font-bold">1</span>
+          <h3 class="text-sm font-bold text-slate-900 tracking-tight">Configure o Veículo</h3>
+        </div>
+        <span
+          class="text-[11px] text-brand-800 font-semibold bg-brand-50 px-2 py-0.5 rounded-full border border-brand-100">Simulador
+          Rápido</span>
+      </div>
+
+      <div class="space-y-3.5">
+        <!-- Marca -->
+        <div>
+          <label for="brandSelect" class="block text-xs font-semibold text-slate-700 mb-1.5">Marca Fabricante</label>
+          <div class="relative">
+            <select id="brandSelect" onchange="onBrandChange()"
+              class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-3.5 py-2.5 appearance-none focus:outline-none focus:ring-2 focus:ring-brand-800/40 focus:border-brand-800 font-medium transition">
+              <option value="Fiat" selected>Fiat</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+              <i class="fa-solid fa-chevron-down text-xs"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modelo & Motorização -->
+        <div>
+          <label for="modelSelect" class="block text-xs font-semibold text-slate-700 mb-1.5">Modelo e motorização / Ano-modelo</label>
+          <div class="relative">
+            <select id="modelSelect" onchange="onSelectionChange()"
+              class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-3.5 py-2.5 appearance-none focus:outline-none focus:ring-2 focus:ring-brand-800/40 focus:border-brand-800 font-medium transition">
+              <!-- Preenchido dinamicamente via JS -->
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+              <i class="fa-solid fa-chevron-down text-xs"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Revisão inicial -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5" for="packageSelect">A partir de qual revisão?</label>
+          <div class="relative">
+            <select id="packageSelect" onchange="onSelectionChange()"
+              class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-3.5 py-2.5 appearance-none focus:outline-none focus:ring-2 focus:ring-brand-800/40 focus:border-brand-800 font-medium transition">
+              <option value="1">1ª Revisão</option>
+              <option value="2">2ª Revisão</option>
+              <option value="3" selected>3ª Revisão</option>
+              <option value="4">4ª Revisão</option>
+              <option value="5">5ª Revisão</option>
+              <option value="6">6ª Revisão</option>
+              <option value="7">7ª Revisão</option>
+              <option value="8">8ª Revisão</option>
+              <option value="9">9ª Revisão</option>
+              <option value="10">10ª Revisão</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+              <i class="fa-solid fa-chevron-down text-xs"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quantidade de revisões -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5" for="revisionQuantitySelect">Quantas revisões deseja fazer?</label>
+          <div class="relative">
+            <select id="revisionQuantitySelect" onchange="onSelectionChange()"
+              class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-3.5 py-2.5 appearance-none focus:outline-none focus:ring-2 focus:ring-brand-800/40 focus:border-brand-800 font-medium transition">
+              <option value="2" selected>2 revisões</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+              <i class="fa-solid fa-chevron-down text-xs"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Destaque de Preço Unitário -->
+        <div
+          class="mt-4 p-3.5 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 flex items-center justify-between">
+          <div>
+            <span class="text-[11px] font-semibold text-slate-500 block uppercase tracking-wider">Revisão selecionada</span>
+            <div class="text-xs text-slate-600 font-medium" id="selectedPackageLabel">3ª Revisão</div>
+          </div>
+        </div>
+
+        <!-- Botão Adicionar -->
+        <button id="addVehicleBtn" onclick="addVehicleToCart()"
+          class="w-full mt-2 bg-brand-800 hover:bg-brand-900 active:scale-[0.99] text-white py-3 px-4 rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+          <i class="fa-solid fa-plus-circle text-base text-emerald-400"></i>
+          <span>Adicionar ao Simulado</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Lista / Carrinho de Veículos Adicionados -->
+    <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+      <div class="flex items-center justify-between mb-3.5">
+        <div class="flex items-center space-x-2">
+          <span
+            class="w-6 h-6 rounded-full bg-brand-800 text-white text-xs flex items-center justify-center font-bold">2</span>
+          <h3 class="text-sm font-bold text-slate-900">Veículos na Simulação</h3>
+        </div>
+        <span id="itemsBadge"
+          class="bg-slate-100 text-slate-700 text-xs font-bold px-2 py-0.5 rounded-full border border-slate-200">0
+          Pacotes</span>
+      </div>
+
+      <!-- Container de Lista -->
+      <div id="cartList" class="space-y-2.5 max-h-72 overflow-y-auto pr-0.5 custom-scrollbar">
+        <!-- Inserido dinamicamente -->
+      </div>
+
+      <!-- Estado Vazio -->
+      <div id="emptyState"
+        class="py-8 px-4 text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/60">
+        <div
+          class="w-12 h-12 mx-auto rounded-full bg-slate-200/60 text-slate-400 flex items-center justify-center mb-2 text-lg">
+          <i class="fa-solid fa-car"></i>
+        </div>
+        <p class="text-xs font-bold text-slate-600">Nenhum veículo adicionado ainda</p>
+        <p class="text-[11px] text-slate-400 mt-0.5">Selecione o modelo acima e clique em "Adicionar ao Simulado".</p>
+      </div>
+
+      <div id="clearCartContainer" class="hidden mt-3 pt-3 border-t border-slate-100 text-right">
+        <button onclick="clearAllItems()"
+          class="text-[11px] text-rose-500 hover:text-rose-700 font-semibold inline-flex items-center gap-1 transition">
+          <i class="fa-regular fa-trash-can"></i> Limpar toda a lista
+        </button>
+      </div>
+    </section>
+
+    <!-- Vantagens do Plano Flexcare -->
+    <section class="bg-brand-50/70 border border-brand-100 rounded-2xl p-4">
+      <h4 class="text-xs font-bold text-brand-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+        <i class="fa-solid fa-star text-amber-500"></i> Por que contratar o Flexcare?
+      </h4>
+      <div class="grid grid-cols-2 gap-2 text-[11px] text-slate-700">
+        <div class="flex items-center gap-1.5 bg-white/80 p-2 rounded-lg border border-brand-100/50">
+          <i class="fa-solid fa-check text-emerald-600"></i>
+          <span>Peças Genuínas</span>
+        </div>
+        <div class="flex items-center gap-1.5 bg-white/80 p-2 rounded-lg border border-brand-100/50">
+          <i class="fa-solid fa-check text-emerald-600"></i>
+          <span>Proteção contra inflação</span>
+        </div>
+        <div class="flex items-center gap-1.5 bg-white/80 p-2 rounded-lg border border-brand-100/50">
+          <i class="fa-solid fa-check text-emerald-600"></i>
+          <span>Valorização de revenda</span>
+        </div>
+        <div class="flex items-center gap-1.5 bg-white/80 p-2 rounded-lg border border-brand-100/50">
+          <i class="fa-solid fa-check text-emerald-600"></i>
+          <span>Mão de obra inclusa</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Barra Fixa Inferior de Resumo & Checkout -->
+  <aside class="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-2xl z-40">
+    <div class="max-w-md mx-auto px-4 py-3">
+      <div class="flex items-center justify-between mb-2">
+        <div>
+          <span class="text-[11px] uppercase tracking-wider font-semibold text-slate-500 block">Total Simulado</span>
+          <div class="flex items-baseline gap-1.5">
+            <span id="grandTotalDisplay" class="text-2xl font-black text-emerald-600 tracking-tight">R$ 0,00</span>
+            <span id="summaryCountText" class="text-[11px] text-slate-500 font-medium">(0 veículos)</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <span id="summaryInstallment"
+            class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium border border-slate-200">12x de
+            R$ 0,00</span>
+        </div>
+      </div>
+
+      <div>
+        <button onclick="requestQuoteModal()"
+          class="w-full bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white py-2.5 px-3 rounded-xl font-bold text-xs shadow transition flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-file-invoice-dollar text-sm text-emerald-400"></i>
+          <span>Solicitar Cotação</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Modal de Detalhes / Cotação -->
+  <div id="quoteModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity">
+    <div
+      class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-clipboard-check"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-900 leading-none">Resumo da Cotação</h3>
+            <span class="text-[11px] text-slate-400">Flexcare Manutenção Garantida</span>
+          </div>
+        </div>
+        <button onclick="closeQuoteModal()" class="text-slate-400 hover:text-slate-600 p-1 text-lg" title="Fechar cotação" aria-label="Fechar cotação">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+          <div class="flex justify-between font-semibold text-slate-600 mb-1">
+            <span>Total de Veículos:</span>
+            <span id="modalTotalVehicles" class="text-slate-900 font-bold">0</span>
+          </div>
+          <div class="flex justify-between font-semibold text-slate-600 text-sm">
+            <span>Investimento Total:</span>
+            <span id="modalTotalCost" class="text-emerald-600 font-extrabold text-base">R$ 0,00</span>
+          </div>
+          <div class="flex justify-between font-semibold text-slate-600 mt-1">
+            <span>Parcelamento:</span>
+            <span id="modalInstallment" class="text-brand-800 font-bold">12x de R$ 0,00</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Seu Nome Completo</label>
+          <input type="text" id="clientName" placeholder="Ex: Roberto Carlos"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-800">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Telefone / WhatsApp</label>
+          <input type="tel" id="clientPhone" placeholder="(00) 90000-0000"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-800">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">E-mail para Envio da Proposta</label>
+          <input type="email" id="clientEmail" placeholder="seuemail@exemplo.com.br"
+            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-800">
+        </div>
+
+        <button onclick="confirmQuote()"
+          class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm mt-2">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>Confirmar e Receber Proposta</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast de Notificação -->
+  <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 hidden transform transition-all duration-300">
+    <div
+      class="bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 border border-slate-700">
+      <i id="toastIcon" class="fa-solid fa-check-circle text-emerald-400"></i>
+      <span id="toastMessage">Item adicionado com sucesso!</span>
+    </div>
+  </div>
+
+  <!-- JavaScript com Base de Dados e Lógica de Negócio -->
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/simulation.js"></script>
+  <script src="assets/js/supabase.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+
+</html>
