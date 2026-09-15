@@ -216,7 +216,10 @@ function addVehicleToCart() {
         emptyState.classList.remove('hidden');
         clearBtnContainer.classList.add('hidden');
         grandTotalDisplay.textContent = formatCurrency(0);
-        summaryInstallment.textContent = `${INSTALLMENT_COUNT}x de ${formatCurrency(0)}`;
+        summaryInstallment.innerHTML = `
+          <span class="text-[13px] font-black leading-none text-emerald-700">${INSTALLMENT_COUNT}x de ${formatCurrency(0)}</span>
+          <span class="text-[12px] font-black uppercase tracking-[0.08em] leading-none text-emerald-700">Sem juros</span>
+        `;
         return;
       }
 
@@ -255,5 +258,8 @@ function addVehicleToCart() {
       });
 
       grandTotalDisplay.textContent = formatCurrency(totalSum);
-      summaryInstallment.textContent = `${INSTALLMENT_COUNT}x de ${formatCurrency(totalSum / INSTALLMENT_COUNT)}`;
+      summaryInstallment.innerHTML = `
+        <span class="text-[13px] font-black leading-none text-emerald-700">${INSTALLMENT_COUNT}x de ${formatCurrency(totalSum / INSTALLMENT_COUNT)}</span>
+        <span class="text-[12px] font-black uppercase tracking-[0.08em] leading-none text-emerald-700">Sem juros</span>
+      `;
     }

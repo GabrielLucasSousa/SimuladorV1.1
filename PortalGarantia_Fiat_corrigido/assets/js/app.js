@@ -2,7 +2,7 @@
     // Modal de cotação
     function requestQuoteModal() {
       if (simulationCart.length === 0) {
-        showToast("Adicione pelo menos um veículo para solicitar cotação!", "warn");
+        showToast("Adicione pelo menos um veículo para salvar o lead!", "warn");
         return;
       }
       const totalSum = simulationCart.reduce((acc, curr) => acc + curr.price, 0);
