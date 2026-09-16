@@ -89,7 +89,7 @@
         <div class="flex items-center space-x-2">
           <span
             class="w-6 h-6 rounded-full bg-brand-800 text-white text-xs flex items-center justify-center font-bold">1</span>
-          <h3 class="text-sm font-bold text-slate-900 tracking-tight">Configure o Veículo</h3>
+          <h3 class="text-sm font-bold text-slate-900 tracking-tight">Configure o Pacote</h3>
         </div>
         <span
           class="text-[11px] text-brand-800 font-semibold bg-brand-50 px-2 py-0.5 rounded-full border border-brand-100">Simulador
@@ -175,7 +175,7 @@
         <button id="addVehicleBtn" onclick="addVehicleToCart()"
           class="w-full mt-2 bg-brand-800 hover:bg-brand-900 active:scale-[0.99] text-white py-3 px-4 rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
           <i class="fa-solid fa-plus-circle text-base text-emerald-400"></i>
-          <span>Adicionar ao Simulado</span>
+          <span>Calcular Valor do Pacote</span>
         </button>
       </div>
     </section>
@@ -186,7 +186,7 @@
         <div class="flex items-center space-x-2">
           <span
             class="w-6 h-6 rounded-full bg-brand-800 text-white text-xs flex items-center justify-center font-bold">2</span>
-          <h3 class="text-sm font-bold text-slate-900">Veículos na Simulação</h3>
+          <h3 class="text-sm font-bold text-slate-900">Pacotes na Simulação</h3>
         </div>
         <span id="itemsBadge"
           class="bg-slate-100 text-slate-700 text-xs font-bold px-2 py-0.5 rounded-full border border-slate-200">0
@@ -205,8 +205,8 @@
           class="w-12 h-12 mx-auto rounded-full bg-slate-200/60 text-slate-400 flex items-center justify-center mb-2 text-lg">
           <i class="fa-solid fa-car"></i>
         </div>
-        <p class="text-xs font-bold text-slate-600">Nenhum veículo adicionado ainda</p>
-        <p class="text-[11px] text-slate-400 mt-0.5">Selecione o modelo acima e clique em "Adicionar ao Simulado".</p>
+        <p class="text-xs font-bold text-slate-600">Nenhum Pacote adicionado ainda</p>
+        <p class="text-[11px] text-slate-400 mt-0.5">Selecione o modelo acima e clique em "Calcular Valor do Pacote".</p>
       </div>
 
       <div id="clearCartContainer" class="hidden mt-3 pt-3 border-t border-slate-100 text-right">
@@ -252,7 +252,7 @@
           <span class="text-[11px] uppercase tracking-wider font-semibold text-slate-500 block">Total Simulado</span>
           <div class="flex items-baseline gap-1.5">
             <span id="grandTotalDisplay" class="text-2xl font-black text-brand-800 tracking-tight">R$ 0,00</span>
-            <span id="summaryCountText" class="text-[11px] text-slate-500 font-medium">(0 veículos)</span>
+            <span id="summaryCountText" class="text-[11px] text-slate-500 font-medium">(0 Pacotes)</span>
           </div>
         </div>
         <div class="text-right">
@@ -297,7 +297,7 @@
       <div class="space-y-3 text-xs">
         <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
           <div class="flex justify-between font-semibold text-slate-600 mb-1">
-            <span>Total de Veículos:</span>
+            <span>Pacote:</span>
             <span id="modalTotalVehicles" class="text-slate-900 font-bold">0</span>
           </div>
           <div class="flex justify-between font-semibold text-slate-600 text-sm">
