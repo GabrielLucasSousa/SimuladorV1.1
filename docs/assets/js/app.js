@@ -89,7 +89,7 @@
 
     // Info modal rápida
     function openInfoModal() {
-      alert("Portal de Simulador de Revisões Flexcare\n\nTabela carregada para veículos Fiat. O plano Flexcare garante economia de até 30% nas manutenções programadas com peças genuínas de fábrica.");
+      alert("Pacotes de Manutenção FlexCare.\n\n Os Pacotes garantem as manutenções futuras com preços fixos sem reajustes. Utilizando peças genuínas e serviço especializado para preservação da garantia de fábrica.");
     }
 
     // Toast feedback

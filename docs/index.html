@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal de Simulador de Revisões Flexcare</title>
+  <title>Pacotes de Manutenção FlexCare - Simulador</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
@@ -46,17 +46,18 @@
   <!-- Header Superior -->
   <header class="bg-gradient-to-r from-brand-900 via-brand-800 to-slate-900 text-white shadow-lg sticky top-0 z-40">
     <div class="max-w-md mx-auto px-4 py-3.5 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div
-          class="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 text-emerald-400 font-bold text-lg shadow-inner">
-          <i class="fa-solid fa-car-tunnel text-emerald-400"></i>
+      <div class="flex min-w-0 items-center space-x-3">
+        <div class="flex h-12 w-16 flex-shrink-0 items-center justify-center">
+          <img src="assets/img/Stellantis-Emblem.png" alt="Stellantis"
+            class="h-14 w-20 object-contain brightness-0 invert">
         </div>
-        <div>
-          <div class="flex items-center gap-1.5">
+        <div class="relative flex h-12 min-w-0 items-center justify-center text-center">
+          <div class="absolute left-0 top-[-8px] whitespace-nowrap">
             <span
-              class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Oficial</span>
+              id="currentDate"
+                class="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"></span>
           </div>
-          <h1 class="text-base font-bold tracking-tight text-white leading-tight">Flexcare Simulator</h1>
+              <h1 class="whitespace-nowrap text-[13px] font-bold tracking-tight text-white leading-tight">Pacotes de Manutenção FlexCare - Simulador</h1>
         </div>
       </div>
       <button onclick="openInfoModal()"
@@ -102,7 +103,7 @@
           <div class="relative">
             <select id="brandSelect" onchange="onBrandChange()"
               class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-3.5 py-2.5 appearance-none focus:outline-none focus:ring-2 focus:ring-brand-800/40 focus:border-brand-800 font-medium transition">
-              <option value="Fiat" selected>Fiat</option>
+              <option value="Fiat" selected>FIAT</option>
             </select>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
               <i class="fa-solid fa-chevron-down text-xs"></i>
@@ -353,6 +354,12 @@
   <script src="assets/js/simulation.js"></script>
   <script src="assets/js/supabase.js"></script>
   <script src="assets/js/app.js"></script>
+  <script>
+    document.getElementById('currentDate').textContent = new Intl.DateTimeFormat('pt-BR', {
+      month: 'long',
+      year: 'numeric'
+    }).format(new Date());
+  </script>
 </body>
 
 </html>
