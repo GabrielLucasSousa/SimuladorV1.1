@@ -7,6 +7,13 @@
       return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
+    function formatInstallmentValue(val) {
+      const [integerPart, decimalPart] = formatCurrency(val)
+        .replace(/^R\$\s?/, '')
+        .split(',');
+      return `<strong class="text-2xl leading-none">${integerPart}</strong><span class="text-sm leading-none">,${decimalPart}</span>`;
+    }
+
     // Inicialização ao carregar página
     window.addEventListener('DOMContentLoaded', () => {
   onBrandChange();
@@ -217,7 +224,7 @@ function addVehicleToCart() {
         clearBtnContainer.classList.add('hidden');
         grandTotalDisplay.textContent = formatCurrency(0);
         summaryInstallment.innerHTML = `
-          <span class="text-[13px] font-black leading-none text-emerald-700">${INSTALLMENT_COUNT}x de ${formatCurrency(0)}</span>
+          <span class="flex items-baseline gap-1 font-black leading-none text-emerald-700"><span class="text-[12px]">${INSTALLMENT_COUNT}x</span> ${formatInstallmentValue(0)}</span>
           <span class="text-[12px] font-black uppercase tracking-[0.08em] leading-none text-emerald-700">Sem juros</span>
         `;
         return;
@@ -259,7 +266,7 @@ function addVehicleToCart() {
 
       grandTotalDisplay.textContent = formatCurrency(totalSum);
       summaryInstallment.innerHTML = `
-        <span class="text-[13px] font-black leading-none text-emerald-700">${INSTALLMENT_COUNT}x de ${formatCurrency(totalSum / INSTALLMENT_COUNT)}</span>
+        <span class="flex items-baseline gap-1 font-black leading-none text-emerald-700"><span class="text-[12px]">${INSTALLMENT_COUNT}x</span> ${formatInstallmentValue(totalSum / INSTALLMENT_COUNT)}</span>
         <span class="text-[12px] font-black uppercase tracking-[0.08em] leading-none text-emerald-700">Sem juros</span>
       `;
     }
