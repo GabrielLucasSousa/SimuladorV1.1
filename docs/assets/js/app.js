@@ -2,11 +2,11 @@
     // Modal de cotação
     function requestQuoteModal() {
       if (simulationCart.length === 0) {
-        showToast("Adicione pelo menos um veículo para salvar o lead!", "warn");
+        showToast("Adicione pelo menos um Pacote para salvar o lead!", "warn");
         return;
       }
       const totalSum = simulationCart.reduce((acc, curr) => acc + curr.price, 0);
-      document.getElementById('modalTotalVehicles').textContent = `${simulationCart.length} veículo(s)`;
+      document.getElementById('modalTotalVehicles').textContent = `${simulationCart.length} pacote(s)`;
       document.getElementById('modalTotalCost').textContent = formatCurrency(totalSum);
       document.getElementById('modalInstallment').textContent = `${INSTALLMENT_COUNT}x de ${formatCurrency(totalSum / INSTALLMENT_COUNT)}`;
       document.getElementById('quoteModal').classList.remove('hidden');
