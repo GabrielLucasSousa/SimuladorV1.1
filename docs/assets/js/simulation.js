@@ -14,6 +14,18 @@
       return `<strong class="text-2xl leading-none">${integerPart}</strong><span class="text-sm leading-none">,${decimalPart}</span>`;
     }
 
+    function calculateInstallmentValue(totalAmount) {
+      return totalAmount / INSTALLMENT_COUNT;
+    }
+
+    function buildInstallmentSummaryMarkup(totalAmount) {
+      const installmentValue = calculateInstallmentValue(totalAmount);
+      return `
+        <span class="flex items-baseline gap-1 font-black leading-none text-emerald-700"><span class="text-[12px]">${INSTALLMENT_COUNT}x</span> ${formatInstallmentValue(installmentValue)}</span>
+        <span class="text-[12px] font-black uppercase tracking-[0.08em] leading-none text-emerald-700">Sem juros</span>
+      `;
+    }
+
     // Inicialização ao carregar página
     window.addEventListener('DOMContentLoaded', () => {
   onBrandChange();
@@ -223,10 +235,7 @@ function addVehicleToCart() {
         emptyState.classList.remove('hidden');
         clearBtnContainer.classList.add('hidden');
         grandTotalDisplay.textContent = formatCurrency(0);
-        summaryInstallment.innerHTML = `
-          <span class="flex items-baseline gap-1 font-black leading-none text-emerald-700"><span class="text-[12px]">${INSTALLMENT_COUNT}x</span> ${formatInstallmentValue(0)}</span>
-          <span class="text-[12px] font-black uppercase tracking-[0.08em] leading-none text-emerald-700">Sem juros</span>
-        `;
+        summaryInstallment.innerHTML = buildInstallmentSummaryMarkup(0);
         return;
       }
 
@@ -265,8 +274,5 @@ function addVehicleToCart() {
       });
 
       grandTotalDisplay.textContent = formatCurrency(totalSum);
-      summaryInstallment.innerHTML = `
-        <span class="flex items-baseline gap-1 font-black leading-none text-emerald-700"><span class="text-[12px]">${INSTALLMENT_COUNT}x</span> ${formatInstallmentValue(totalSum / INSTALLMENT_COUNT)}</span>
-        <span class="text-[12px] font-black uppercase tracking-[0.08em] leading-none text-emerald-700">Sem juros</span>
-      `;
+      summaryInstallment.innerHTML = buildInstallmentSummaryMarkup(totalSum);
     }

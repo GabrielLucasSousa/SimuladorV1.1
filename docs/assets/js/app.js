@@ -6,9 +6,15 @@
         return;
       }
       const totalSum = simulationCart.reduce((acc, curr) => acc + curr.price, 0);
+      const installmentValue = calculateInstallmentValue(totalSum);
+      const installmentText = formatCurrency(installmentValue).replace(/^R\$\s*/, '');
+      const [integerPart, decimalPart] = installmentText.split(',');
+      const vehicleNames = simulationCart.map(item => `${item.modelName} (${item.year})`).join(', ');
+      document.getElementById('modalVehicleName').textContent = vehicleNames || '-';
+      document.getElementById('modalSimulationDate').textContent = new Date().toLocaleDateString('pt-BR');
       document.getElementById('modalTotalVehicles').textContent = `${simulationCart.length} pacote(s)`;
       document.getElementById('modalTotalCost').textContent = formatCurrency(totalSum);
-      document.getElementById('modalInstallment').textContent = `${INSTALLMENT_COUNT}x de ${formatCurrency(totalSum / INSTALLMENT_COUNT)}`;
+      document.getElementById('modalInstallment').innerHTML = `${INSTALLMENT_COUNT}x <span class="modal-installment-number">${integerPart}</span><span class="modal-installment-decimal">,${decimalPart}</span>`;
       document.getElementById('quoteModal').classList.remove('hidden');
     }
 
@@ -20,6 +26,8 @@
       const name = document.getElementById('clientName').value.trim();
       const phone = document.getElementById('clientPhone').value.trim();
       const email = document.getElementById('clientEmail').value.trim();
+      const cpf = document.getElementById('clientCpf').value.trim();
+      const dealershipName = document.getElementById('dealershipName').value.trim();
 
       if (!name || !phone) {
         alert("Por favor, preencha seu Nome e Telefone para prosseguir.");
@@ -33,14 +41,18 @@
       }
 
       const totalSum = simulationCart.reduce((acc, curr) => acc + curr.price, 0);
+      const installmentValue = calculateInstallmentValue(totalSum);
       const quote = {
         id: `quote_${Date.now()}`,
         createdAt: new Date().toISOString(),
-        client: { name, phone, email },
+        simulationDate: new Date().toLocaleDateString('pt-BR'),
+        client: { name, phone, email, cpf },
+        dealership: dealershipName,
+        vehicle: simulationCart.map(item => `${item.modelName} (${item.year})`).join(', '),
         items: simulationCart.map(item => ({ ...item })),
         total: totalSum,
         installments: INSTALLMENT_COUNT,
-        installmentValue: totalSum / INSTALLMENT_COUNT
+        installmentValue
       };
 
       const savedQuotes = JSON.parse(localStorage.getItem('flexcare_quotes') || '[]');
@@ -50,7 +62,9 @@
       if (window.saveQuoteToSupabase) {
         const result = await window.saveQuoteToSupabase(quote);
         if (!result.ok) {
-          console.warn('Falha ao salvar no Supabase, mantendo fallback local:', result.reason);
+          console.error('Falha ao salvar no Supabase:', result);
+          alert(`Falha ao salvar no Supabase: ${result.reason || 'erro desconhecido'}`);
+          return;
         }
       }
 
@@ -78,9 +92,10 @@
         body += `   Valor: ${formatCurrency(item.price)}\n\n`;
       });
 
+      const installmentValue = calculateInstallmentValue(totalSum);
       body += `------------------------------------\n`;
       body += `VALOR TOTAL SIMULADO: ${formatCurrency(totalSum)}\n`;
-      body += `(Opção de parcelamento em até ${INSTALLMENT_COUNT}x sem juros: ${formatCurrency(totalSum / INSTALLMENT_COUNT)} por parcela)\n\n`;
+      body += `(Opção de parcelamento em até ${INSTALLMENT_COUNT}x sem juros: ${formatCurrency(installmentValue)} por parcela)\n\n`;
       body += `Gostaria de fechar essa contratação e agendar o pacote!`;
 
       const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;

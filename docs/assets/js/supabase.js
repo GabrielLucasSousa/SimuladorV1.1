@@ -43,6 +43,8 @@ window.saveQuoteToSupabase = async function saveQuoteToSupabase(quote) {
     name: quote.client.name,
     phone: quote.client.phone,
     email: quote.client.email || null,
+    cpfcnpj: quote.client.cpf || null,
+    css: quote.dealership || null,
     vehicles: quote.items,
     total: Number(quote.total || 0),
     created_at: quote.createdAt || new Date().toISOString()
