@@ -28,9 +28,36 @@
 
     // Inicialização ao carregar página
     window.addEventListener('DOMContentLoaded', () => {
-  onBrandChange();
-  renderCart();
-});
+      document.querySelectorAll('#quoteModal input').forEach(input => {
+        input.value = '';
+      });
+      populateBrandOptions();
+      onBrandChange();
+      renderCart();
+    });
+
+    function populateBrandOptions() {
+      const brandSelect = document.getElementById('brandSelect');
+      const selectedBrand = brandSelect.value;
+      const brands = [...new Set(FLEXCARE_DATABASE.map(car => car.brand))];
+
+      brandSelect.innerHTML = '';
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = 'Selecione uma marca';
+      placeholder.disabled = true;
+      placeholder.selected = true;
+      brandSelect.appendChild(placeholder);
+
+      brands.forEach(brand => {
+        const option = document.createElement('option');
+        option.value = brand;
+        option.textContent = brand.toUpperCase();
+        brandSelect.appendChild(option);
+      });
+
+      brandSelect.value = brands.includes(selectedBrand) ? selectedBrand : '';
+    }
 
 function calculateSelectedRevisions(car) {
   const startRevision = parseInt(
@@ -70,17 +97,42 @@ function updateRevisionQuantityOptions(car) {
   }
 }
 
-    // Filtra modelos pela marca
-    function onBrandChange() {
+function updateStartRevisionOptions(car) {
+    const packageSelect = document.getElementById('packageSelect');
+    const currentRevision = parseInt(packageSelect.value, 10) || 3;
+    const selectedRevision = Math.min(currentRevision, car.revisions.length);
+
+    packageSelect.innerHTML = '';
+    for (let revision = 1; revision <= car.revisions.length; revision += 1) {
+  const option = document.createElement('option');
+  option.value = revision;
+  option.textContent = `${revision}ª Revisão`;
+  option.selected = revision === selectedRevision;
+  packageSelect.appendChild(option);
+    }
+}
+
+  // Filtra modelos pela marca
+  function onBrandChange() {
       const selectedBrand = document.getElementById('brandSelect').value;
       const modelSelect = document.getElementById('modelSelect');
       modelSelect.innerHTML = '';
 
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = selectedBrand ? 'Selecione um modelo' : 'Selecione primeiro uma marca';
+      placeholder.disabled = true;
+      placeholder.selected = true;
+      modelSelect.appendChild(placeholder);
+
+      modelSelect.disabled = !selectedBrand;
       const filtered = FLEXCARE_DATABASE.filter(item => item.brand === selectedBrand);
       filtered.forEach((car) => {
         const opt = document.createElement('option');
         opt.value = car.id;
-        opt.textContent = `${car.name} (${car.year})`;
+        opt.textContent = car.name.includes(car.year)
+          ? car.name
+          : `${car.name} (${car.year})`;
         modelSelect.appendChild(opt);
       });
 
@@ -97,8 +149,18 @@ function updateRevisionQuantityOptions(car) {
             item => item.id === modelId
         );
 
-    if (!car) return;
+    if (!car) {
+      document.getElementById('packageSelect').disabled = true;
+      document.getElementById('revisionQuantitySelect').disabled = true;
+      document.getElementById('selectedPackageLabel').textContent =
+        'Selecione uma marca e um modelo';
+      toggleAddButtonState();
+      return;
+    }
 
+    document.getElementById('packageSelect').disabled = false;
+    document.getElementById('revisionQuantitySelect').disabled = false;
+    updateStartRevisionOptions(car);
     updateRevisionQuantityOptions(car);
 
     const startRevision = parseInt(
@@ -116,6 +178,7 @@ function updateRevisionQuantityOptions(car) {
 
     document.getElementById('selectedPackageLabel').textContent =
       packageLabel;
+    toggleAddButtonState();
 }
 
 function addVehicleToCart() {
@@ -209,11 +272,13 @@ function addVehicleToCart() {
     function toggleAddButtonState() {
       const addVehicleBtn = document.getElementById('addVehicleBtn');
       const hasItems = simulationCart.length > 0;
+      const hasSelectedModel = Boolean(document.getElementById('modelSelect').value);
+      const isDisabled = hasItems || !hasSelectedModel;
 
-      addVehicleBtn.disabled = hasItems;
-      addVehicleBtn.setAttribute('aria-disabled', String(hasItems));
-      addVehicleBtn.classList.toggle('opacity-70', hasItems);
-      addVehicleBtn.classList.toggle('cursor-not-allowed', hasItems);
+      addVehicleBtn.disabled = isDisabled;
+      addVehicleBtn.setAttribute('aria-disabled', String(isDisabled));
+      addVehicleBtn.classList.toggle('opacity-70', isDisabled);
+      addVehicleBtn.classList.toggle('cursor-not-allowed', isDisabled);
     }
 
     function renderCart() {

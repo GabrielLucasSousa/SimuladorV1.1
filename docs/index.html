@@ -83,6 +83,13 @@
       </div>
     </div>
 
+    <!-- Aviso de início de funcionamento -->
+    <div id="launchNotice" role="status"
+      class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 flex items-center gap-3 text-amber-900">
+      <i class="fa-solid fa-circle-info text-amber-600" aria-hidden="true"></i>
+      <p id="launchNoticeText" class="text-xs font-semibold"></p>
+    </div>
+
     <!-- Formulário de Seleção do Veículo -->
     <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
       <div class="flex items-center justify-between mb-4">
@@ -103,7 +110,10 @@
           <div class="relative">
             <select id="brandSelect" onchange="onBrandChange()"
               class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl px-3.5 py-2.5 appearance-none focus:outline-none focus:ring-2 focus:ring-brand-800/40 focus:border-brand-800 font-medium transition">
-              <option value="Fiat" selected>FIAT</option>
+              <option value="" selected disabled>Selecione uma marca</option>
+              <option value="Jeep">JEEP</option>
+              <option value="Ram">RAM</option>
+              <option value="Leapmotor">LEAPMOTOR</option>
             </select>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
               <i class="fa-solid fa-chevron-down text-xs"></i>
@@ -386,6 +396,20 @@
       month: 'long',
       year: 'numeric'
     }).format(new Date());
+
+    const launchDate = new Date(2026, 9, 14);
+    const launchDateLabel = new Intl.DateTimeFormat('pt-BR').format(launchDate);
+    const launchNotice = document.getElementById('launchNotice');
+    document.getElementById('launchNoticeText').textContent = new Date() < launchDate
+      ? `O simulador estará em funcionamento a partir do dia ${launchDateLabel}.`
+      : `O simulador está em funcionamento desde ${launchDateLabel}.`;
+
+    if (new Date() >= launchDate) {
+      launchNotice.classList.replace('border-amber-200', 'border-emerald-200');
+      launchNotice.classList.replace('bg-amber-50', 'bg-emerald-50');
+      launchNotice.classList.replace('text-amber-900', 'text-emerald-900');
+      launchNotice.querySelector('i').classList.replace('text-amber-600', 'text-emerald-600');
+    }
   </script>
 </body>
 
