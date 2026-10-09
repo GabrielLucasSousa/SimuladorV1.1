@@ -59,11 +59,11 @@
       savedQuotes.push(quote);
       localStorage.setItem('flexcare_quotes', JSON.stringify(savedQuotes));
 
-      if (window.saveQuoteToSupabase) {
-        const result = await window.saveQuoteToSupabase(quote);
+      if (window.saveQuoteToSheets) {
+        const result = await window.saveQuoteToSheets(quote);
         if (!result.ok) {
-          console.error('Falha ao salvar no Supabase:', result);
-          alert(`Falha ao salvar no Supabase: ${result.reason || 'erro desconhecido'}`);
+          console.error('Falha ao salvar na planilha:', result);
+          alert(`Falha ao salvar na planilha: ${result.reason || 'erro desconhecido'}`);
           return;
         }
       }

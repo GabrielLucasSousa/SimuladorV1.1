@@ -9,10 +9,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    window.SUPABASE_URL = 'https://aogpozbwqijqpqdtrrst.supabase.co';
-    window.SUPABASE_ANON_KEY = 'sb_publishable_V6BJSWicVrNxknareckocQ_zF-HHdwc';
+    // URL do App da Web do Google Apps Script (termina em /exec)
+    window.GOOGLE_SHEETS_URL = '';
 
     tailwind.config = {
       theme: {
@@ -389,7 +388,7 @@
   <!-- JavaScript com Base de Dados e Lógica de Negócio -->
   <script src="assets/js/data.js"></script>
   <script src="assets/js/simulation.js"></script>
-  <script src="assets/js/supabase.js"></script>
+  <script src="assets/js/sheets.js"></script>
   <script src="assets/js/app.js"></script>
   <script>
     document.getElementById('currentDate').textContent = new Intl.DateTimeFormat('pt-BR', {
