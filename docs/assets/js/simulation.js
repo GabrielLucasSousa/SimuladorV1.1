@@ -112,6 +112,16 @@ function updateStartRevisionOptions(car) {
     }
 }
 
+  // Foto do modelo: assets/img/models/<marca>-<modelo>.webp (ex.: jeep-compass.webp).
+  // "Importados" agrupa carros diferentes, então usa o nome do carro (ex.: jeep-wrangler.webp).
+  function getModelImage(car) {
+    const slug = value => String(value)
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const model = car.model === 'Importados' ? car.name.replace(/\s+\d.*$/, '') : car.model;
+    return `assets/img/models/${slug(car.brand)}-${slug(model)}.webp`;
+  }
+
   // Filtra modelos pela marca
   function onBrandChange() {
       const selectedBrand = document.getElementById('brandSelect').value;
@@ -239,7 +249,9 @@ function addVehicleToCart() {
 
         quantity: quantity,
 
-        price: price
+        price: price,
+
+        image: getModelImage(car)
     };
 
     simulationCart.push(cartItem);
@@ -312,13 +324,15 @@ function addVehicleToCart() {
       simulationCart.forEach((item, index) => {
         totalSum += item.price;
         const card = document.createElement('div');
-        card.className = "flex items-center justify-between p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-brand-600/40 transition shadow-sm group";
-        
+        card.className = "rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-brand-600/40 transition shadow-sm group overflow-hidden";
+
         card.innerHTML = `
+          <div class="bg-gradient-to-b from-white to-slate-100 px-4 pt-4 pb-2">
+            <img src="${item.image}" alt="${item.brand} ${item.modelName}" class="w-full h-40 object-contain"
+              onerror="this.parentElement.remove()">
+          </div>
+          <div class="flex items-center justify-between p-3">
           <div class="flex items-start gap-2.5 min-w-0 pr-2">
-            <div class="w-8 h-8 rounded-lg bg-red-50 text-red-600 border border-red-200/60 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">
-              F
-            </div>
             <div class="min-w-0">
               <div class="flex items-center gap-1.5 flex-wrap">
                 <h4 class="text-xs font-bold text-slate-900 truncate">${item.modelName}</h4>
@@ -333,6 +347,7 @@ function addVehicleToCart() {
             <button onclick="removeCartItem('${item.id}')" class="w-7 h-7 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition" title="Remover item">
               <i class="fa-regular fa-trash-can text-xs"></i>
             </button>
+          </div>
           </div>
         `;
         listContainer.appendChild(card);
