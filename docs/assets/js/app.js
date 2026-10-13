@@ -7,14 +7,14 @@
       }
       const totalSum = simulationCart.reduce((acc, curr) => acc + curr.price, 0);
       const installmentValue = calculateInstallmentValue(totalSum);
-      const installmentText = formatCurrency(installmentValue).replace(/^R\$\s*/, '');
-      const [integerPart, decimalPart] = installmentText.split(',');
       const vehicleNames = simulationCart.map(item => `${item.modelName} (${item.year})`).join(', ');
+      const packageNames = simulationCart.map(item => item.packageName).join(', ');
       document.getElementById('modalVehicleName').textContent = vehicleNames || '-';
       document.getElementById('modalSimulationDate').textContent = new Date().toLocaleDateString('pt-BR');
-      document.getElementById('modalTotalVehicles').textContent = `${simulationCart.length} pacote(s)`;
+      document.getElementById('modalPackage').textContent = packageNames || '-';
       document.getElementById('modalTotalCost').textContent = formatCurrency(totalSum);
-      document.getElementById('modalInstallment').innerHTML = `${INSTALLMENT_COUNT}x <span class="modal-installment-number">${integerPart}</span><span class="modal-installment-decimal">,${decimalPart}</span>`;
+      document.getElementById('modalInstallment').textContent = `${INSTALLMENT_COUNT}x de ${formatCurrency(installmentValue)} sem juros`;
+      populateDealershipOptions(simulationCart[0].brand);
       document.getElementById('quoteModal').classList.remove('hidden');
     }
 
@@ -89,6 +89,7 @@
       simulationCart.forEach((item, i) => {
         body += `${i + 1}. ${item.brand} ${item.modelName} (${item.year})\n`;
         body += `   Pacote: ${item.packageName}\n`;
+        body += `   Tabela: ${item.referenceMonth}\n`;
         body += `   Valor: ${formatCurrency(item.price)}\n\n`;
       });
 

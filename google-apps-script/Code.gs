@@ -4,7 +4,8 @@
 const SHEET_NAME = 'Cotações';
 const HEADERS = [
   'ID', 'Data', 'Nome', 'Telefone', 'E-mail', 'CPF/CNPJ', 'Concessionária',
-  'Veículos', 'Pacotes', 'Total', 'Parcelas', 'Valor Parcela', 'Itens (JSON)'
+  'Veículos', 'Pacotes', 'Total', 'Parcelas', 'Valor Parcela', 'Itens (JSON)',
+  'Mês Referência'
 ];
 
 function getSheet() {
@@ -40,7 +41,8 @@ function doPost(e) {
       Number(data.total || 0),
       data.installments || '',
       Number(data.installmentValue || 0),
-      JSON.stringify(items)
+      JSON.stringify(items),
+      items.map(i => i.referenceMonth || '').join(', ')
     ]);
 
     return json({ ok: true });

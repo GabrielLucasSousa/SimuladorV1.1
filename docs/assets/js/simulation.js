@@ -31,10 +31,36 @@
       document.querySelectorAll('#quoteModal input').forEach(input => {
         input.value = '';
       });
+      populateMonthOptions();
       populateBrandOptions();
       onBrandChange();
       renderCart();
     });
+
+    function getSelectedMonth() {
+      const monthKey = document.getElementById('monthSelect').value;
+      return FLEXCARE_MONTHS.find(month => month.key === monthKey) || FLEXCARE_MONTHS[0];
+    }
+
+    function populateMonthOptions() {
+      const monthSelect = document.getElementById('monthSelect');
+      monthSelect.innerHTML = '';
+      // Apenas o mês atual e o anterior ficam disponíveis.
+      FLEXCARE_MONTHS.slice(0, 2).forEach(month => {
+        const option = document.createElement('option');
+        option.value = month.key;
+        option.textContent = month.label.split('/')[0];
+        monthSelect.appendChild(option);
+      });
+      monthSelect.value = FLEXCARE_MONTHS[0].key;
+    }
+
+    // Troca a tabela de preços usada na simulação
+    function onMonthChange() {
+      FLEXCARE_DATABASE = getSelectedMonth().cars;
+      populateBrandOptions();
+      onBrandChange();
+    }
 
     function populateBrandOptions() {
       const brandSelect = document.getElementById('brandSelect');
@@ -137,13 +163,26 @@ function updateStartRevisionOptions(car) {
 
       modelSelect.disabled = !selectedBrand;
       const filtered = FLEXCARE_DATABASE.filter(item => item.brand === selectedBrand);
+      // Agrupa as versões sob o nome do modelo (o rótulo do optgroup aparece em negrito)
+      const groups = new Map();
       filtered.forEach((car) => {
-        const opt = document.createElement('option');
-        opt.value = car.id;
-        opt.textContent = car.name.includes(car.year)
-          ? car.name
-          : `${car.name} (${car.year})`;
-        modelSelect.appendChild(opt);
+        if (!groups.has(car.model)) groups.set(car.model, []);
+        groups.get(car.model).push(car);
+      });
+      [...groups.keys()].sort((a, b) => a.localeCompare(b, 'pt-BR')).forEach((model) => {
+        const group = document.createElement('optgroup');
+        group.label = model.toUpperCase();
+        groups.get(model)
+          .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR', { numeric: true }))
+          .forEach((car) => {
+            const opt = document.createElement('option');
+            opt.value = car.id;
+            opt.textContent = car.name.includes(car.year)
+              ? car.name
+              : `${car.name} (${car.year})`;
+            group.appendChild(opt);
+          });
+        modelSelect.appendChild(group);
       });
 
       onSelectionChange();
@@ -251,6 +290,8 @@ function addVehicleToCart() {
 
         price: price,
 
+        referenceMonth: getSelectedMonth().label,
+
         image: getModelImage(car)
     };
 
@@ -270,16 +311,6 @@ function addVehicleToCart() {
       showToast('Veículo removido da simulação', 'info');
     }
 
-    // Limpa todos os itens
-    function clearAllItems() {
-      if (simulationCart.length === 0) return;
-      if (confirm("Deseja realmente limpar toda a lista simulada?")) {
-        simulationCart = [];
-        renderCart();
-        showToast('Lista de simulação esvaziada');
-      }
-    }
-
     // Renderiza a lista e calcula totais
     function toggleAddButtonState() {
       const addVehicleBtn = document.getElementById('addVehicleBtn');
@@ -296,7 +327,6 @@ function addVehicleToCart() {
     function renderCart() {
       const listContainer = document.getElementById('cartList');
       const emptyState = document.getElementById('emptyState');
-      const clearBtnContainer = document.getElementById('clearCartContainer');
       const itemsBadge = document.getElementById('itemsBadge');
       const grandTotalDisplay = document.getElementById('grandTotalDisplay');
       const summaryCountText = document.getElementById('summaryCountText');
@@ -310,44 +340,36 @@ function addVehicleToCart() {
 
       if (totalCount === 0) {
         emptyState.classList.remove('hidden');
-        clearBtnContainer.classList.add('hidden');
         grandTotalDisplay.textContent = formatCurrency(0);
         summaryInstallment.innerHTML = buildInstallmentSummaryMarkup(0);
         return;
       }
 
       emptyState.classList.add('hidden');
-      clearBtnContainer.classList.remove('hidden');
 
       let totalSum = 0;
 
       simulationCart.forEach((item, index) => {
         totalSum += item.price;
         const card = document.createElement('div');
-        card.className = "rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-brand-600/40 transition shadow-sm group overflow-hidden";
+        card.className = "rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden";
 
         card.innerHTML = `
-          <div class="bg-gradient-to-b from-white to-slate-100 px-4 pt-4 pb-2">
+          <div class="bg-white px-4 pt-4 pb-2">
             <img src="${item.image}" alt="${item.brand} ${item.modelName}" class="w-full h-40 object-contain"
               onerror="this.parentElement.remove()">
           </div>
-          <div class="flex items-center justify-between p-3">
-          <div class="flex items-start gap-2.5 min-w-0 pr-2">
-            <div class="min-w-0">
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <h4 class="text-xs font-bold text-slate-900 truncate">${item.modelName}</h4>
-                <span class="text-[10px] text-slate-500 font-normal">(${item.year})</span>
-              </div>
-              <p class="text-[11px] text-brand-800 font-semibold mt-0.5 flex items-center gap-1">
-                <i class="fa-solid fa-wrench text-[10px] text-slate-400"></i> ${item.packageName}
-              </p>
+          <div class="border-t border-slate-100 px-4 pt-3 pb-3">
+            <p class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide">${item.brand}</p>
+            <h4 class="text-sm font-bold text-slate-900 mt-0.5">${item.modelName}</h4>
+            <p class="text-xs text-slate-400 mt-0.5">Ano-modelo ${item.year}</p>
+            <div class="border-t border-slate-100 mt-3 pt-3 flex items-center justify-between gap-3">
+              <span class="text-xs text-slate-500">${item.packageName}</span>
+              <span class="text-sm font-bold text-slate-900 whitespace-nowrap">${formatCurrency(item.price)}</span>
             </div>
-          </div>
-          <div class="flex items-center gap-3 flex-shrink-0">
-            <button onclick="removeCartItem('${item.id}')" class="w-7 h-7 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition" title="Remover item">
-              <i class="fa-regular fa-trash-can text-xs"></i>
+            <button onclick="removeCartItem('${item.id}')" class="mt-3 text-xs text-slate-500 underline underline-offset-2 hover:text-rose-600 transition">
+              Remover
             </button>
-          </div>
           </div>
         `;
         listContainer.appendChild(card);
